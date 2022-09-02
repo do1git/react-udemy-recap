@@ -1,18 +1,50 @@
+import React, { useContext } from "react";
+import FavoritesContext from "../components/store/favorites-context";
+import Card from "../components/ui/Card";
 import styles from "./MeetupItem.module.css";
-export default function MeetupItem(props) {
+
+function MeetupItem(props) {
+  const favoritesCtx = useContext(FavoritesContext);
+
+  const itemIsFavorite = favoritesCtx.itemIsFavorite(props.id);
+
+  const toggleFavoriteStatusHandler = () => {
+    if (itemIsFavorite) {
+      favoritesCtx.removeFavorite(props.id);
+    } else {
+      favoritesCtx.addFavorite({
+        id: props.id,
+        title: props.title,
+        description: props.description,
+        image: props.image,
+        address: props.address,
+      });
+    }
+  };
+
   return (
     <li className={styles.item}>
-      <div className={styles.image}>
-        <img src={props.image} alt={props.title} />
-      </div>
-      <div className={styles.content}>
-        <h3>{props.title}</h3>
-        <address>{props.address}</address>
-        <p>{props.description}</p>
-      </div>
-      <div className={styles.actions}>
-        <button>To Favorites</button>
-      </div>
+      <Card>
+        <div className={styles.image}>
+          <img
+            src={props.image}
+            alt={props.title}
+            style={{ width: "300px", height: "300px" }}
+          />
+        </div>
+        <div className={styles.content}>
+          <h3>{props.title}</h3>
+          <address>{props.address}</address>
+          <p>{props.description}</p>
+        </div>
+        <div className={styles.actions}>
+          <button onClick={toggleFavoriteStatusHandler}>
+            {itemIsFavorite ? "Remove form fav" : "To Favorites"}
+          </button>
+        </div>
+      </Card>
     </li>
   );
 }
+
+export default React.memo(MeetupItem);
